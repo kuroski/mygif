@@ -1,18 +1,36 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
+    <div v-if="state.matches('idle')">
+      idle
+    </div>
+    <div v-if="state.matches('uploading')">
+      Uploading...
+    </div>
+    <div v-if="state.matches('uploaded')">
+      uploaded
+    </div>
+    <div v-if="state.matches('failure')">
+      failure
+    </div>
+
+    <button @click="send('UPLOAD', { data: 'MYBLOB' })">
+      Send
+    </button>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from "@/components/HelloWorld.vue";
+import { useMachine } from "@xstate/vue";
+import gifMachine from "@/gifMachine";
 
 export default {
   name: "Home",
-  components: {
-    HelloWorld
+  setup() {
+    const { state, send } = useMachine(gifMachine);
+    return {
+      state,
+      send
+    };
   }
 };
 </script>
