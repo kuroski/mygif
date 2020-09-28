@@ -38,6 +38,7 @@
 <script>
 import { useMachine } from "@xstate/vue";
 import gifMachine from "@/gifMachine";
+import env from "@/env";
 
 const STATUS_INITIAL = 0,
   STATUS_SAVING = 1,
@@ -45,7 +46,7 @@ const STATUS_INITIAL = 0,
   STATUS_FAILED = 3;
 
 function upload(formData, cb) {
-  const url = `http://localhost:3000/api/fileUpload`;
+  const url = `${env.API_URL}/fileUpload`;
   return (
     fetch(url, {
       method: "POST",

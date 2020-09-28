@@ -1,6 +1,9 @@
 const fs = require("fs");
+const path = require("path");
 const multiparty = require("multiparty");
-var ffmpeg = require("fluent-ffmpeg");
+const ffmpegStatic = require("ffmpeg-static");
+const ffmpeg = require("fluent-ffmpeg");
+ffmpeg.setFfmpegPath(ffmpegStatic);
 
 const allowCors = fn => async (req, res) => {
   res.setHeader("Access-Control-Allow-Credentials", true);
@@ -22,17 +25,18 @@ const allowCors = fn => async (req, res) => {
 
 module.exports = allowCors((req, res) => {
   const form = new multiparty.Form();
+  const outputPath = path.join("/", "tmp", "./output.gif");
 
   form.parse(req, function(_err, _fields, files) {
     ffmpeg(files.file[0].path)
       .on("end", function() {
         res.setHeader("Content-disposition", "attachment; filename=output.gif");
-        const readStream = fs.createReadStream("./output.gif");
+        const readStream = fs.createReadStream(outputPath);
         readStream.on("open", function() {
           res.setHeader("Content-type", "image/gif");
           readStream.pipe(res);
         });
       })
-      .save("./output.gif");
+      .save(outputPath);
   });
 });
