@@ -12,6 +12,7 @@
   "dependencies": {
     "@vue/composition-api": "^1.0.0-beta.14",
     "@xstate/vue": "^0.3.0",
+    "cloudinary": "^1.23.0",
     "core-js": "^3.6.5",
     "ffmpeg-static": "^4.2.7",
     "fluent-ffmpeg": "^2.1.2",

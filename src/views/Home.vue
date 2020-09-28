@@ -52,17 +52,10 @@ function upload(formData, cb) {
       method: "POST",
       body: formData
     })
-      .then(x => x.blob())
+      .then(x => x.json())
       // add url field
-      .then(blobResponse => {
-        console.log(blobResponse);
-        let reader = new FileReader();
-        reader.readAsDataURL(blobResponse);
-        reader.onloadend = function() {
-          let base64data = reader.result;
-          console.log(base64data);
-          cb(base64data);
-        };
+      .then(response => {
+        cb(response.url.replace("mov", "gif"));
       })
   );
 }
