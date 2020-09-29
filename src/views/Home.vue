@@ -1,5 +1,10 @@
 <template>
-  <div class="home">
+  <div class="shadow-outline rounded-lg p-6 bg-gray-200">
+    <h1 class="text-center text-3xl">
+      Video to Gif
+    </h1>
+    <p class="text-center my-2">File should be a video</p>
+
     <div class="text-3xl font-bold mb-3">
       <div v-if="state.matches('idle')">
         idle
@@ -15,14 +20,23 @@
       </div>
     </div>
 
-    <input
-      type="file"
-      name="file"
-      :disabled="state.matches('uploading')"
-      @change="uploadFile($event.target.files)"
-      accept="video/*"
-      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-    />
+    <label
+      for="file"
+      class="shadow appearance-none border rounded w-full flex py-8 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+      @dragover="dragover"
+      @dragleave="dragleave"
+      @drop="drop"
+    >
+      <input
+        id="file"
+        type="file"
+        name="file"
+        :disabled="state.matches('uploading')"
+        @change="uploadFile($event.target.files)"
+        accept="video/*"
+        class="w-px h-px opacity-0 overflow-hidden absolute"
+      />
+    </label>
 
     <img :src="src" class="mx-auto mt-6" />
   </div>
@@ -53,37 +67,28 @@ export default {
         send("UPLOAD", { formData });
       }
     };
+  },
+  methods: {
+    dragover(event) {
+      event.preventDefault();
+      // Add some visual fluff to show the user can drop its files
+      if (!event.currentTarget.classList.contains("bg-green-300")) {
+        event.currentTarget.classList.remove("bg-gray-100");
+        event.currentTarget.classList.add("bg-green-300");
+      }
+    },
+    dragleave(event) {
+      // Clean up
+      event.currentTarget.classList.add("bg-gray-100");
+      event.currentTarget.classList.remove("bg-green-300");
+    },
+    drop(event) {
+      event.preventDefault();
+      this.uploadFile(event.dataTransfer.files); // Trigger the onChange event manually
+      // Clean up
+      event.currentTarget.classList.add("bg-gray-100");
+      event.currentTarget.classList.remove("bg-green-300");
+    }
   }
 };
 </script>
-
-<style>
-.dropbox {
-  outline: 2px dashed grey; /* the dash box */
-  outline-offset: -10px;
-  background: lightcyan;
-  color: dimgray;
-  padding: 10px 10px;
-  min-height: 200px; /* minimum height */
-  position: relative;
-  cursor: pointer;
-}
-
-.input-file {
-  opacity: 0; /* invisible but it's there! */
-  width: 100%;
-  height: 200px;
-  position: absolute;
-  cursor: pointer;
-}
-
-.dropbox:hover {
-  background: lightblue; /* when mouse over to the drop zone, change color */
-}
-
-.dropbox p {
-  font-size: 1.2em;
-  text-align: center;
-  padding: 50px 0;
-}
-</style>

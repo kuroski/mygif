@@ -23,6 +23,9 @@ export default Machine({
   states: {
     idle: {},
     uploading: {
+      entry: assign(() => ({
+        file: null
+      })),
       invoke: {
         id: "upload-file",
         src: uploadMovie,
