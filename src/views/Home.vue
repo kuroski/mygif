@@ -1,64 +1,37 @@
 <template>
   <div class="home">
+    <div class="text-3xl font-bold mb-3">
+      <div v-if="state.matches('idle')">
+        idle
+      </div>
+      <div v-if="state.matches('uploading')" class="text-blue-500">
+        Uploading...
+      </div>
+      <div v-if="state.matches('uploaded')" class="text-green-500">
+        uploaded
+      </div>
+      <div v-if="state.matches('failure')" class="text-red-500">
+        failure
+      </div>
+    </div>
+
     <input
       type="file"
       name="file"
-      :disabled="isSaving"
-      @change="filesChange($event.target.name, $event.target.files)"
-      accept="*"
-      class="input-file"
+      :disabled="state.matches('uploading')"
+      @change="uploadFile($event.target.files)"
+      accept="video/*"
+      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
     />
-    <p v-if="isInitial">
-      Drag your file(s) here to begin<br />
-      or click to browse
-    </p>
-    <p v-if="isSaving">Uploadingfiles...</p>
 
-    <div v-if="state.matches('idle')">
-      idle
-    </div>
-    <div v-if="state.matches('uploading')">
-      Uploading...
-    </div>
-    <div v-if="state.matches('uploaded')">
-      uploaded
-    </div>
-    <div v-if="state.matches('failure')">
-      failure
-    </div>
-
-    <button @click="send('UPLOAD', { data: 'MYBLOB' })">
-      Send
-    </button>
-
-    <img v-if="src" :src="src" />
+    <img :src="src" class="mx-auto mt-6" />
   </div>
 </template>
 
 <script>
 import { useMachine } from "@xstate/vue";
 import gifMachine from "@/gifMachine";
-import env from "@/env";
-
-const STATUS_INITIAL = 0,
-  STATUS_SAVING = 1,
-  STATUS_SUCCESS = 2,
-  STATUS_FAILED = 3;
-
-function upload(formData, cb) {
-  const url = `${env.API_URL}/fileUpload`;
-  return (
-    fetch(url, {
-      method: "POST",
-      body: formData
-    })
-      .then(x => x.json())
-      // add url field
-      .then(response => {
-        cb(response.url.replace("mov", "gif"));
-      })
-  );
-}
+import { computed } from "@vue/composition-api";
 
 export default {
   name: "Home",
@@ -66,68 +39,20 @@ export default {
     const { state, send } = useMachine(gifMachine);
     return {
       state,
-      send
+      send,
+      src: computed(
+        () =>
+          state.value.context.file?.gif ||
+          "https://via.placeholder.com/468x60?text=Waiting+for+a+upload"
+      ),
+      uploadFile: fileList => {
+        const formData = new FormData();
+        if (!fileList.length) return;
+        formData.append("movie", fileList[0], fileList[0].name);
+        console.log(formData, fileList);
+        send("UPLOAD", { formData });
+      }
     };
-  },
-  data() {
-    return {
-      uploadedFiles: [],
-      uploadError: null,
-      currentStatus: null,
-      src: null
-    };
-  },
-  computed: {
-    isInitial() {
-      return this.currentStatus === STATUS_INITIAL;
-    },
-    isSaving() {
-      return this.currentStatus === STATUS_SAVING;
-    },
-    isSuccess() {
-      return this.currentStatus === STATUS_SUCCESS;
-    },
-    isFailed() {
-      return this.currentStatus === STATUS_FAILED;
-    }
-  },
-  methods: {
-    reset() {
-      // reset form to initial state
-      this.currentStatus = STATUS_INITIAL;
-      this.uploadedFiles = [];
-      this.uploadError = null;
-    },
-    save(formData) {
-      // upload data to the server
-      this.currentStatus = STATUS_SAVING;
-
-      upload(formData, url => {
-        this.src = url;
-      })
-        .then(x => {
-          this.uploadedFiles = [].concat(x);
-          this.currentStatus = STATUS_SUCCESS;
-        })
-        .catch(err => {
-          this.uploadError = err.response;
-          this.currentStatus = STATUS_FAILED;
-        });
-    },
-    filesChange(fieldName, fileList) {
-      // handle file changes
-      const formData = new FormData();
-
-      if (!fileList.length) return;
-
-      formData.append(fieldName, fileList[0], fileList[0].name);
-
-      // save it
-      this.save(formData);
-    }
-  },
-  mounted() {
-    this.reset();
   }
 };
 </script>

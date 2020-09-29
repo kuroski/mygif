@@ -23,7 +23,7 @@ module.exports = allowCors((req, res) => {
   const form = new multiparty.Form();
   form.parse(req, function(_err, _fields, files) {
     cloudinary.uploader
-      .upload(files.file[0].path, { resource_type: "video" })
+      .upload(files.movie[0].path, { resource_type: "video" })
       .then(function(image) {
         console.log();
         console.log("** File Upload (Promise)");

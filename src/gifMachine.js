@@ -1,25 +1,36 @@
-import { assign, Machine, actions } from "xstate";
+import { Machine, assign } from "xstate";
+import env from "@/env";
+
+function uploadMovie(_context, { formData }) {
+  console.log(formData);
+  return fetch(`${env.API_URL}/fileUpload`, {
+    method: "POST",
+    body: formData
+  })
+    .then(response => response.json())
+    .then(data => ({
+      ...data,
+      gif: data.url.replace("mov", "gif")
+    }));
+}
 
 export default Machine({
   id: "gif",
   initial: "idle",
-  context: {},
+  context: {
+    file: null
+  },
   states: {
     idle: {},
     uploading: {
       invoke: {
         id: "upload-file",
-        src: context => {
-          console.log(context);
-          return new Promise(resolve => setTimeout(resolve, 1000));
-        },
+        src: uploadMovie,
         onDone: {
           target: "uploaded",
-          actions: actions.log(
-            (context, event) =>
-              `context: ${JSON.stringify(context)}, event: ${event.type}`,
-            "Finish uploading"
-          )
+          actions: assign((_context, { data }) => ({
+            file: data
+          }))
         },
         onError: "failure"
       }
@@ -39,11 +50,7 @@ export default Machine({
   },
   on: {
     UPLOAD: {
-      target: ".uploading",
-      actions: assign((_context, event) => {
-        console.log(event);
-        return {};
-      })
+      target: ".uploading"
     }
   }
 });
