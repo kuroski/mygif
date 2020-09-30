@@ -6,16 +6,16 @@
     <p class="text-center my-2">File should be a video</p>
 
     <div class="text-3xl font-bold mb-3">
-      <div v-if="state.matches('idle')">
+      <div v-if="state.matches('upload.idle')">
         idle
       </div>
-      <div v-if="state.matches('uploading')" class="text-blue-500">
+      <div v-if="state.matches('upload.uploading')" class="text-blue-500">
         Uploading...
       </div>
-      <div v-if="state.matches('uploaded')" class="text-green-500">
+      <div v-if="state.matches('upload.uploaded')" class="text-green-500">
         uploaded
       </div>
-      <div v-if="state.matches('failure')" class="text-red-500">
+      <div v-if="state.matches('upload.failure')" class="text-red-500">
         failure
       </div>
     </div>
@@ -23,9 +23,14 @@
     <label
       for="file"
       class="shadow appearance-none border rounded w-full flex py-8 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-      @dragover="dragover"
-      @dragleave="dragleave"
-      @drop="drop"
+      :class="{
+        'bg-green-300': state.matches('drag.dragover'),
+        'bg-gray-100':
+          state.matches('drag.dragleave') || state.matches('drag.drop')
+      }"
+      @dragover.prevent="send('DRAGOVER')"
+      @dragleave="send('DRAGLEAVE')"
+      @drop.prevent="send('DROP', $event.dataTransfer.files)"
     >
       <input
         id="file"
@@ -50,7 +55,7 @@ import { computed } from "@vue/composition-api";
 export default {
   name: "Home",
   setup() {
-    const { state, send } = useMachine(gifMachine);
+    const { state, send } = useMachine(gifMachine, { devTools: true });
     return {
       state,
       send,
@@ -60,35 +65,10 @@ export default {
           "https://via.placeholder.com/468x60?text=Waiting+for+a+upload"
       ),
       uploadFile: fileList => {
-        const formData = new FormData();
         if (!fileList.length) return;
-        formData.append("movie", fileList[0], fileList[0].name);
-        console.log(formData, fileList);
-        send("UPLOAD", { formData });
+        send("UPLOAD", fileList);
       }
     };
-  },
-  methods: {
-    dragover(event) {
-      event.preventDefault();
-      // Add some visual fluff to show the user can drop its files
-      if (!event.currentTarget.classList.contains("bg-green-300")) {
-        event.currentTarget.classList.remove("bg-gray-100");
-        event.currentTarget.classList.add("bg-green-300");
-      }
-    },
-    dragleave(event) {
-      // Clean up
-      event.currentTarget.classList.add("bg-gray-100");
-      event.currentTarget.classList.remove("bg-green-300");
-    },
-    drop(event) {
-      event.preventDefault();
-      this.uploadFile(event.dataTransfer.files); // Trigger the onChange event manually
-      // Clean up
-      event.currentTarget.classList.add("bg-gray-100");
-      event.currentTarget.classList.remove("bg-green-300");
-    }
   }
 };
 </script>
