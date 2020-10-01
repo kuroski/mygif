@@ -1,10 +1,7 @@
 <template>
-  <div class="shadow-outline rounded-lg p-6 bg-gray-200">
-    <h1 class="text-center text-3xl">
-      Video to Gif
-    </h1>
-    <p class="text-center my-2">File should be a video</p>
-
+  <div
+    class="flex flex-col items-center shadow-outline rounded-lg p-6 bg-gray-200"
+  >
     <div class="text-3xl font-bold mb-3">
       <div v-if="state.matches('upload.idle')">
         idle
@@ -22,7 +19,7 @@
 
     <label
       for="file"
-      class="shadow appearance-none border rounded w-full flex py-8 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+      class="transition-all duration-500 ease-in-out flex w-full h-64 py-8 border-2 border-dashed border-blue-400 bg-blue-100 hover:border-blue-500 appearance-none rounded cursor-pointer focus:outline-none focus:shadow-outline"
       :class="{
         'bg-green-300': state.matches('drag.dragover'),
         'bg-gray-100':
@@ -32,6 +29,11 @@
       @dragleave="send('DRAGLEAVE')"
       @drop.prevent="send('DROP', $event.dataTransfer.files)"
     >
+      <img
+        src="@/assets/upload.svg"
+        alt="Drop your files here"
+        class="transition-all duration-500 ease-in-out transform hover:scale-110"
+      />
       <input
         id="file"
         type="file"
@@ -43,7 +45,16 @@
       />
     </label>
 
-    <img :src="src" class="mx-auto mt-6" />
+    <p class="text-center my-8 text-xl font-thin">or</p>
+
+    <label
+      for="file"
+      class="transition ease-in-out duration-300 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer"
+    >
+      Choose a video
+    </label>
+
+    <img v-if="src" :src="src" class="mx-auto mt-6" />
   </div>
 </template>
 
@@ -59,11 +70,7 @@ export default {
     return {
       state,
       send,
-      src: computed(
-        () =>
-          state.value.context.file?.gif ||
-          "https://via.placeholder.com/468x60?text=Waiting+for+a+upload"
-      ),
+      src: computed(() => state.value.context.file?.gif || null),
       uploadFile: fileList => {
         if (!fileList.length) return;
         send("UPLOAD", fileList);
