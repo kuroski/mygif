@@ -1,3 +1,40 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.progress-line, .progress-line:before {
+    @apply h-1 w-full m-0;
+}
+
+.progress-line {
+    @apply flex bg-blue-200 border-blue-500 rounded overflow-hidden;
+}
+
+.progress-line:before {
+    content: '';
+    @apply bg-blue-600;
+    animation: running-progress 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes running-progress {
+    0% { 
+        @apply ml-0;
+        margin-right: 100%;
+    }
+    50% { 
+        @apply mr-0;
+        margin-left: 25%;
+    }
+    100% { 
+        @apply mr-0;
+        margin-left: 100%;
+    }
+}
+
+.fade-enter-active, .fade-leave-active {
+    @apply transition-opacity duration-200 ease-in-out;
+}
+
+.fade-enter, .fade-leave-to {
+    @apply opacity-0;
+}
