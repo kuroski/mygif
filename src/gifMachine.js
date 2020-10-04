@@ -2,9 +2,11 @@ import { Machine, assign } from "xstate";
 import env from "@/env";
 import { raise } from "xstate/lib/actions";
 
-function uploadMovie(_context, fileList) {
+function uploadMovie(context, fileList) {
+  const file = fileList[0] || context.retryFile;
+  console.log(fileList);
   const formData = new FormData();
-  formData.append("movie", fileList[0], fileList[0].name);
+  formData.append("movie", file, file?.name || "movie");
 
   return fetch(`${env.API_URL}/fileUpload`, {
     method: "POST",
@@ -13,7 +15,8 @@ function uploadMovie(_context, fileList) {
     .then(response => response.json())
     .then(data => ({
       ...data,
-      gif: data.url.replace("mov", "gif")
+      gif: data.url.replace("mov", "gif"),
+      thumbnail: data.url.replace("mov", "jpeg")
     }));
 }
 
@@ -25,13 +28,15 @@ export default Machine({
       id: "upload",
       initial: "idle",
       context: {
-        file: null
+        file: null,
+        retryFile: null
       },
       states: {
         idle: {},
         uploading: {
-          entry: assign(() => ({
-            file: null
+          entry: assign((context, retryFile) => ({
+            file: null,
+            retryFile: retryFile[0] || context.retryFile
           })),
           invoke: {
             id: "upload-file",
@@ -39,7 +44,8 @@ export default Machine({
             onDone: {
               target: "uploaded",
               actions: assign((_context, { data }) => ({
-                file: data
+                file: data,
+                retryFile: null
               }))
             },
             onError: "failure"
