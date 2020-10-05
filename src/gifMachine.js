@@ -14,8 +14,8 @@ function uploadMovie(context, fileList) {
     .then(response => response.json())
     .then(data => ({
       ...data,
-      gif: data.url.replace("mov", "gif"),
-      thumbnail: data.url.replace("mov", "jpeg")
+      gif: data.url.replace(/\.[0-9a-z]+$/i, ".gif"),
+      thumbnail: data.url.replace(/\.[0-9a-z]+$/i, ".jpeg")
     }));
 }
 
