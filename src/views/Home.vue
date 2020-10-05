@@ -69,11 +69,10 @@
       <div class="flex flex-col items-center">
         <label
           for="file"
-          class="transition-all duration-500 ease-in-out flex w-full h-64 py-8 border-2 border-dashed border-blue-400 bg-blue-100 hover:border-blue-500 appearance-none rounded cursor-pointer focus:outline-none focus:shadow-outline"
+          class="upload-label"
           :class="{
-            'bg-green-300': state.matches('drag.dragover'),
-            'bg-gray-100':
-              state.matches('drag.dragleave') || state.matches('drag.drop')
+            'bg-green-100 border-green-400': state.matches('drag.dragover'),
+            'bg-gray-100': state.matches('drag.drop')
           }"
           @dragover.prevent="send('DRAGOVER')"
           @dragleave="send('DRAGLEAVE')"
@@ -137,6 +136,18 @@ export default {
 </script>
 
 <style scoped>
+.upload-label {
+  @apply transition-all duration-500 ease-in-out flex w-full h-64 py-8 border-2 border-dashed border-blue-400 bg-blue-100 appearance-none rounded cursor-pointer;
+}
+
+.upload-label:hover {
+  @apply border-blue-500;
+}
+
+.upload-label:focus {
+  @apply outline-none shadow-outline;
+}
+
 .fade-enter-active,
 .fade-leave-active {
   @apply transition-opacity duration-200 ease-in-out;
