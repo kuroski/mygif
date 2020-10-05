@@ -4,7 +4,6 @@ import { raise } from "xstate/lib/actions";
 
 function uploadMovie(context, fileList) {
   const file = fileList[0] || context.retryFile;
-  console.log(fileList);
   const formData = new FormData();
   formData.append("movie", file, file?.name || "movie");
 
@@ -34,9 +33,9 @@ export default Machine({
       states: {
         idle: {},
         uploading: {
-          entry: assign((context, retryFile) => ({
+          entry: assign((context, fileList) => ({
             file: null,
-            retryFile: retryFile[0] || context.retryFile
+            retryFile: fileList[0] || context.retryFile
           })),
           invoke: {
             id: "upload-file",
@@ -54,13 +53,23 @@ export default Machine({
         uploaded: {
           on: {
             REFRESH: "uploading",
-            RESET: "idle"
+            RESET: {
+              target: "idle",
+              actions: assign(() => ({
+                retryFile: null
+              }))
+            }
           }
         },
         failure: {
           on: {
             RETRY: "uploading",
-            CANCEL: "idle"
+            CANCEL: {
+              target: "idle",
+              actions: assign(() => ({
+                retryFile: null
+              }))
+            }
           }
         }
       }
