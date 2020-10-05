@@ -19,10 +19,7 @@
       <div class="w-full flex flex-col items-center">
         <h2 class="text-center text-2xl">Failure!</h2>
         <p class="text-center mt-2 mb-6">Your upload failed, please</p>
-        <button
-          @click="send('RETRY')"
-          class="transition ease-in-out duration-300 bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded cursor-pointer"
-        >
+        <button @click="send('RETRY')" class="btn">
           Try again
         </button>
       </div>
@@ -53,18 +50,12 @@
             class="appearance-none bg-transparent border-none flex-1 mr-2"
             ref="url"
           />
-          <button
-            @click="copyUrl"
-            class="transition ease-in-out duration-300 bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded cursor-pointer"
-          >
+          <button @click="copyUrl" class="btn">
             {{ copyText }}
           </button>
         </div>
 
-        <button
-          @click="send('RESET')"
-          class="mt-4 transition ease-in-out duration-300 border border-blue-500 hover:bg-blue-500 text-blue-500 hover:text-white py-1 px-2 rounded cursor-pointer text-sm"
-        >
+        <button @click="send('RESET')" class="btn btn--secondary mt-4">
           Upload new movie
         </button>
       </div>
@@ -106,10 +97,7 @@
 
         <p class="text-center my-6 text-xl font-thin">or</p>
 
-        <label
-          for="file"
-          class="transition ease-in-out duration-300 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer"
-        >
+        <label for="file" class="btn">
           Choose a video
         </label>
       </div>
