@@ -2,47 +2,74 @@
 @tailwind components;
 @tailwind utilities;
 
+.card {
+    @apply w-full flex flex-col items-center rounded-lg p-6 bg-gray-100;
+}
+
 .btn {
-    @apply transition ease-in-out duration-300 bg-blue-500 text-white py-2 px-4 rounded cursor-pointer;
+  @apply transition ease-in-out duration-300 bg-blue-500 text-white py-2 px-4 rounded cursor-pointer;
 }
 
 .btn:hover {
-    @apply bg-blue-700;
+  @apply bg-blue-700;
 }
 
 .btn--secondary {
-    @apply bg-transparent border border-blue-500 text-blue-500 text-sm py-1 px-2;
+  @apply bg-transparent border border-blue-500 text-blue-500 text-sm py-1 px-2;
 }
 
 .btn--secondary:hover {
-    @apply bg-blue-500 text-white;
+  @apply bg-blue-500 text-white;
 }
 
-.progress-line, .progress-line:before {
-    @apply h-1 w-full m-0;
+.upload-label {
+  @apply transition-all duration-500 ease-in-out flex w-full h-64 py-8 border-2 border-dashed border-blue-400 bg-blue-100 appearance-none rounded cursor-pointer;
+}
+
+.upload-label:hover {
+  @apply border-blue-500;
+}
+
+.upload-label:focus {
+  @apply outline-none shadow-outline;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  @apply transition-opacity duration-200 ease-in-out;
+}
+
+.fade-enter,
+.fade-leave-to {
+  @apply opacity-0;
+}
+
+.progress-line,
+.progress-line:before {
+  @apply h-1 w-full m-0;
 }
 
 .progress-line {
-    @apply flex bg-blue-200 border-blue-500 rounded overflow-hidden;
+  @apply flex bg-blue-200 border-blue-500 rounded overflow-hidden;
 }
 
 .progress-line:before {
-    content: '';
-    @apply bg-blue-600;
-    animation: running-progress 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  content: "";
+  @apply bg-blue-600;
+  animation: running-progress 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 @keyframes running-progress {
-    0% { 
-        @apply ml-0;
-        margin-right: 100%;
-    }
-    50% { 
-        @apply mr-0;
-        margin-left: 25%;
-    }
-    100% { 
-        @apply mr-0;
-        margin-left: 100%;
-    }
+  0% {
+    @apply ml-0;
+    margin-right: 100%;
+  }
+  50% {
+    @apply mr-0;
+    margin-left: 25%;
+  }
+  100% {
+    @apply mr-0;
+    margin-left: 100%;
+  }
 }
